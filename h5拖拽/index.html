@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>拖拽</title>
+  <style>
+    body{font-size:84%;}
+    #dustbin{width:100px; height:260px; line-height:1.4; background-color:gray; font-size:36px; font-family:"微软雅黑", "Yahei Mono"; text-align:center; text-shadow:-1px -1px #bbb; float:left;}
+    #dragbox{width:500px; padding-left:20px; float:left;}
+    .draglist{padding:10px; margin-bottom:5px; border:2px dashed #ccc; background-color:#eee; cursor:move;}
+    .draglist:hover{border-color:#cad5eb; background-color:#f0f3f9;}
+    .dragremind{padding-top:2em; clear:both;}
+  </style>
+</head>
+<body>
+  <div id="dustbin"><br />垃<br />圾<br />箱</div>
+  <div id="dragbox">
+    <div class="draglist" title="拖拽我" draggable="true">列表1</div>
+    <div class="draglist" title="拖拽我" draggable="true">列表2</div>
+    <div class="draglist" title="拖拽我" draggable="true">列表3</div>
+    <div class="draglist" title="拖拽我" draggable="true">列表4</div>
+    <div class="draglist" title="拖拽我" draggable="true">列表5</div>
+    <div class="draglist" title="拖拽我" draggable="true">列表6</div>
+  </div>
+  <div class="dragremind"></div>
+  <script type="text/javascript">
+    // 选择器封装
+    var $ = function(str){
+      if (str.charAt(0) === '.') {
+        var eles = [],
+        allElements = document.getElementsByTagName('*')
+        for (var i = 0,l = allElements.length; i < l; i++) {
+          if( allElements[i].className === str.substr(1) ){
+            eles.push(allElements[i])
+          }
+        }
+        return eles
+      } else if(str.charAt(0) === '#'){
+        return document.getElementById(str.substr(1))
+      }
+    }
+
+    var eleDrag = null,eleDustbin = $('#dustbin'),eleRemind=$('.dragremind')[0];
+    
+    $('#dragbox').ondragstart = function(e){
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData("text", e.target.innerHTML);
+      eleDrag = e.target;
+    }
+
+    $('#dragbox').ondragend = function(e){
+      e.dataTransfer.clearData("text");
+      eleDrag = null;
+      this.style.color = "#000000";
+    }
+
+    eleDustbin.ondragover = function(e) {
+      /*拖拽元素在目标元素头上移动的时候*/
+      e.preventDefault();
+    };
+
+    eleDustbin.ondragenter = function(e) {
+      /*拖拽元素进入目标元素头上的时候*/
+      this.style.color = "#ffffff";
+    };
+
+    // 拖拽元素未放入目标
+    eleDustbin.ondragleave = function(){
+      this.style.color = "#000000";
+    }
+
+    // 拖拽元素放入目标
+    eleDustbin.ondrop = function(e) {
+      e.preventDefault();
+      // 数据只能在drop中获取
+      var data = e.dataTransfer.getData('Text')
+      /*拖拽元素进入目标元素头上，同时鼠标松开的时候*/
+      if (eleDrag) {
+        // 大写text兼容火狐5—
+        eleRemind.innerHTML = '<strong>"' + data + '"</strong>被扔进了垃圾箱';
+        eleDrag.parentNode.removeChild(eleDrag);
+      }
+      this.style.color = "#000000";
+    };
+  </script>
+</body>
+</html>
