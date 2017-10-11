@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>图片预加载</title>
+  <script src="js/jquery-3.2.1.min.js"></script>
+  <script src="js/preload.js"></script>
+  <style>
+    html,body{
+      height: 100%;
+    }
+    .box{
+      text-align: center;
+    }
+    a{
+      text-decoration: none;
+    }
+    #img{
+      display: inline-block;
+      width: 100%;
+      max-height: 660px;
+    }
+    .btn{
+      display: inline-block;
+      height: 30px;
+      line-height: 30px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      padding: 0 10px;
+      margin-right: 50px;
+      color: #333;
+    }
+    .loading{
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #eee;
+      text-align: center;
+      font-size: 30px;
+    }
+    .progress{
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="box">
+    <img id="img" src="https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-443187.jpg" alt="pic">
+    <p>
+      <a href="javascript:;" class="btn" data-control="prev">上一页</a>
+      <a href="javascript:;" class="btn" data-control="next">下一页</a>
+    </p>
+  </div>
+
+  <div class="loading">
+    <progress value="0" max="100" class="progress"></progress>
+    <span>0%</span>
+  </div>
+
+  <script>
+
+    var imgs = [
+      'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-443187.jpg',
+      'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-464469.jpg',
+      'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-439221.jpg',
+      'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-550712.jpg',
+      'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-449724.jpg',
+      'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-545183.jpg',
+      'https://wallpapers.wallhaven.cc/wallpapers/full/wallhaven-460162.jpg'
+    ]
+    
+    var index = 0,
+        len = imgs.length,
+        $progress = $('.progress')
+    
+    // 图片无序加载
+    $.preload(imgs, {
+      each: function(count) {
+        $('.loading').show()
+        $('span').html(Math.round((count+1)/len*100) + '%')
+        $progress.attr('value', Math.round((count+1)/len*100))
+      },
+      all: function() {
+        $('.loading').hide()
+      }
+    })
+
+    // 图片有序加载
+    // $.preload(imgs, {
+    //   order: true
+    // })
+    
+    // 通用操作
+    $('.btn').on('click', function() {
+      if ('prev' === $(this).data('control')) {
+        index = Math.max(0, --index);
+      } else {
+        index = Math.min(len - 1, ++index);
+      }
+      $('$img').attr('src', imgs[index]);
+    })
+  </script>
+</body>
+</html>
